@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -7,47 +7,38 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['Fira Code', 'monospace'],
-          },
-          colors: {
-            tech: {
-              bg: '#020617', // Slate 950
-              card: '#0f172a', // Slate 900
-              cyan: '#06b6d4',
-              purple: '#8b5cf6',
-              neon: '#22d3ee'
-            }
-          },
           animation: {
             'float': 'float 6s ease-in-out infinite',
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'bounce-slow': 'bounce 3s infinite',
             'spin-slow': 'spin 8s linear infinite',
+            'wiggle': 'wiggle 1s ease-in-out infinite',
             'glow': 'glow 2s ease-in-out infinite alternate',
+            'slide-in': 'slideIn 0.5s ease-out',
             'typewriter': 'typewriter 4s steps(40) 1s 1 normal both, blink 0.75s step-end infinite',
             'fade-in-up': 'fadeInUp 0.8s ease-out',
             'fade-in-down': 'fadeInDown 0.8s ease-out',
-            'neon-flicker': 'flicker 1.5s infinite alternate',
           },
           keyframes: {
             float: {
               '0%, 100%': { transform: 'translateY(0)' },
               '50%': { transform: 'translateY(-10px)' },
             },
+            wiggle: {
+              '0%, 100%': { transform: 'rotate(-3deg)' },
+              '50%': { transform: 'rotate(3deg)' },
+            },
             glow: {
-              '0%': { boxShadow: '0 0 5px #06b6d4, 0 0 10px #06b6d4' },
-              '100%': { boxShadow: '0 0 10px #06b6d4, 0 0 20px #8b5cf6' },
+              '0%': { boxShadow: '0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff' },
+              '100%': { boxShadow: '0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff' },
+            },
+            slideIn: {
+              '0%': { transform: 'translateX(-100%)', opacity: '0' },
+              '100%': { transform: 'translateX(0)', opacity: '1' },
             },
             typewriter: {
               '0%': { width: '0' },
@@ -55,7 +46,7 @@
             },
             blink: {
               '0%, 100%': { borderColor: 'transparent' },
-              '50%': { borderColor: '#22d3ee' },
+              '50%': { borderColor: '#ffffff' },
             },
             fadeInUp: {
               '0%': { transform: 'translateY(30px)', opacity: '0' },
@@ -65,306 +56,417 @@
               '0%': { transform: 'translateY(-30px)', opacity: '0' },
               '100%': { transform: 'translateY(0)', opacity: '1' },
             },
-            flicker: {
-              '0%, 19%, 21%, 23%, 25%, 54%, 56%, 100%': { opacity: 1 },
-              '20%, 24%, 55%': { opacity: 0.5 },
-            }
           }
         }
       }
     }
   </script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
     body {
-      background-color: #020617;
-      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
       overflow-x: hidden;
+      background: #000000;
+      color: #ffffff;
     }
     
-    /* Latar Belakang Gradient Tech & Grid Overlay (Fitur Tambahan) */
     .gradient-bg {
-      background: radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.08), transparent 25%),
-                  radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
     }
-
-    .tech-grid {
-      background-size: 30px 30px;
-      background-image: 
-        linear-gradient(to right, rgba(6, 182, 212, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+    
+    .card-gradient {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
     }
     
     .hero-gradient {
-      background: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #e5e5e5 50%, #cccccc 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     
-    /* Styling Kartu bergaya Glassmorphism & Neon */
-    .glass-card {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(30, 41, 59, 1);
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    
     .snippet-card {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(51, 65, 85, 0.5);
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .snippet-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(34, 211, 238, 0.4);
-      box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.1);
     }
     
     .language-badge {
       display: inline-block;
       padding: 0.25rem 0.75rem;
-      border-radius: 4px;
+      border-radius: 9999px;
       font-size: 0.75rem;
-      font-weight: 600;
-      font-family: 'Fira Code', monospace;
-      letter-spacing: 0.05em;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
     }
     
-    /* Logo Neon Glow */
-    .logo-container { position: relative; display: inline-block; }
+    .logo-container {
+      position: relative;
+      display: inline-block;
+    }
+    
     .logo-glow {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       border-radius: 0.5rem;
-      background: linear-gradient(45deg, #06b6d4, #8b5cf6);
-      filter: blur(10px); opacity: 0.6; z-index: -1;
+      background: linear-gradient(45deg, #ffffff, #e5e5e5, #cccccc);
+      filter: blur(15px);
+      opacity: 0.3;
+      z-index: -1;
       animation: spin-slow 8s linear infinite;
     }
     
-    .code-block { position: relative; overflow: hidden; font-family: 'Fira Code', monospace; }
+    .code-block {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .code-block::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .floating-element {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .floating-element:nth-child(2) {
+      animation-delay: 2s;
+    }
+    
+    .floating-element:nth-child(3) {
+      animation-delay: 4s;
+    }
+    
+    .typewriter-container {
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 3px solid;
+      width: 0;
+      animation: typewriter;
+    }
+    
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
     
     .particle {
-      position: absolute; border-radius: 50%;
-      background: rgba(34, 211, 238, 0.3);
-      box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
       animation: float 8s infinite linear;
     }
+    
+    .typing-text {
+      display: inline-block;
+      overflow: hidden;
+      border-right: 3px solid #ffffff;
+      white-space: nowrap;
+    }
 
-    .typing-text { border-right: 3px solid #22d3ee; }
-    .btn-mobile { min-height: 44px; min-width: 44px; }
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      
+      .hero-section {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+      }
+      
+      .code-block {
+        margin-top: 2rem;
+      }
+      
+      .floating-element {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .snippet-card {
+        padding: 1rem !important;
+      }
+      
+      .language-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+      }
+    }
+
+    /* Touch-friendly buttons */
+    .btn-mobile {
+      min-height: 44px;
+      min-width: 44px;
+    }
   </style>
 </head>
-<body class="gradient-bg min-h-screen relative">
-  <div class="fixed inset-0 tech-grid z-0 pointer-events-none"></div>
+<body class="gradient-bg text-white min-h-screen">
+  <!-- Particle Background -->
+  <div id="particles-container" class="fixed top-0 left-0 w-full h-full z-0"></div>
   
-  <div id="particles-container" class="fixed top-0 left-0 w-full h-full z-0 pointer-events-none"></div>
-  
-  <header class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 animate-fade-in-down">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-gray-800 animate-fade-in-down">
     <div class="container mx-auto px-4 py-3">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2">
           <div class="logo-container">
             <div class="logo-glow"></div>
-            <div class="w-9 h-9 rounded-lg bg-slate-900 border border-cyan-500/30 flex items-center justify-center">
-              <i class="fas fa-terminal text-cyan-400 text-sm"></i>
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-white to-gray-300 flex items-center justify-center animate-pulse-slow">
+              <i class="fas fa-code text-black text-sm"></i>
             </div>
           </div>
-          <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent tracking-wide">CodeSwap</h1>
+          <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent animate-pulse">CodeSwap</h1>
         </div>
         <nav id="navLinks" class="flex items-center space-x-2 sm:space-x-4">
-          </nav>
+          <!-- Navigation links will be populated by JavaScript -->
+        </nav>
       </div>
     </div>
   </header>
 
-  <section class="py-12 md:py-20 px-4 relative z-10 hero-section">
+  <!-- Hero Section -->
+  <section class="py-8 sm:py-12 md:py-16 px-4 relative z-10 hero-section">
     <div class="container mx-auto max-w-6xl">
-      <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
-        <div class="lg:w-1/2 animate-fade-in-up">
-          <div class="inline-block px-3 py-1 mb-6 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-sm font-mono flex items-center w-max">
-            <span class="w-2 h-2 rounded-full bg-cyan-400 mr-2 animate-pulse"></span>
-            v1.0 System Online
-          </div>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Berbagi & Temukan <br/>
-            <span id="typing-text" class="hero-gradient font-mono text-3xl md:text-4xl lg:text-5xl mt-2 block h-14"></span> 
+      <div class="flex flex-col lg:flex-row items-center justify-between">
+        <div class="lg:w-1/2 mb-8 lg:mb-0 animate-fade-in-up">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
+            Berbagi & Temukan 
+            <span id="typing-text" class="hero-gradient block sm:inline mt-2 sm:mt-0"></span> 
           </h1>
-          <p class="text-slate-400 text-lg mb-8 max-w-lg leading-relaxed">
-            Platform berbagi kode untuk developer. Upload, jelajahi, dan integrasikan snippet dengan kecepatan tinggi.
+          <p class="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 max-w-lg animate-fade-in-up" style="animation-delay: 0.3s;">
+            Platform berbagi kode untuk developer Indonesia. Upload, jelajahi, dan kolaborasi dengan snippet kode dari berbagai bahasa pemrograman.
           </p>
           
-          <div class="grid grid-cols-3 gap-4 mb-8">
-            <div class="glass-card rounded-xl p-4 flex flex-col justify-center border-l-2 border-l-cyan-400">
-              <div class="text-2xl font-bold text-white font-mono" id="totalSnippets">0</div>
-              <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Snippets</div>
+          <!-- Stats Section -->
+          <div class="flex items-center space-x-4 mb-6 sm:mb-8 animate-fade-in-up" style="animation-delay: 0.4s;">
+            <div class="flex items-center space-x-2">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                <i class="fas fa-code text-white text-sm"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold" id="totalSnippets">0</div>
+                <div class="text-xs text-gray-400">Total Snippet</div>
+              </div>
             </div>
-            <div class="glass-card rounded-xl p-4 flex flex-col justify-center border-l-2 border-l-purple-500">
-              <div class="text-2xl font-bold text-white font-mono" id="totalLikes">0</div>
-              <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Total Likes</div>
-            </div>
-            <div class="glass-card rounded-xl p-4 flex flex-col justify-center border-l-2 border-l-emerald-400">
-              <div class="text-2xl font-bold text-white font-mono truncate" id="topLanguage">-</div>
-              <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Top Lang</div>
+            <div class="flex items-center space-x-2">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
+                <i class="fas fa-heart text-white text-sm"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold" id="totalLikes">0</div>
+                <div class="text-xs text-gray-400">Total Like</div>
+              </div>
             </div>
           </div>
           
-          <div class="flex flex-col sm:flex-row gap-4">
-            <a href="/request" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-medium hover:from-cyan-400 hover:to-blue-500 transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] text-center flex items-center justify-center btn-mobile">
-              <i class="fas fa-terminal mr-2"></i> Request Code
-            </a>
-            <a href="#snippets" class="px-6 py-3 bg-slate-800/50 rounded-lg font-medium hover:bg-slate-800 transition-all border border-slate-700 hover:border-cyan-500/50 text-center flex items-center justify-center btn-mobile group">
-              <i class="fas fa-search mr-2 text-slate-400 group-hover:text-cyan-400 transition-colors"></i> Jelajahi
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in-up" style="animation-delay: 0.5s;">
+<a href="/request" class="px-4 sm:px-6 py-3 bg-gradient-to-r from-white to-gray-300 text-black rounded-lg font-medium hover:from-gray-200 hover:to-gray-400 transition-all shadow-lg hover:shadow-white/20 animate-pulse-slow text-center btn-mobile">
+  <i class="fas fa-code mr-2"></i>request
+</a>
+            <a href="#snippets" class="px-4 sm:px-6 py-3 bg-gray-800 rounded-lg font-medium hover:bg-gray-700 transition-all border border-gray-700 hover:animate-wiggle text-center btn-mobile">
+              <i class="fas fa-search mr-2"></i>Jelajahi Kode
             </a>
           </div>
         </div>
-
-        <div class="lg:w-1/2 w-full relative">
-          <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl blur opacity-20 animate-pulse"></div>
-          <div class="glass-card rounded-2xl overflow-hidden relative z-10 border border-slate-700 shadow-2xl code-block">
-            <div class="bg-slate-900/80 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-              <div class="flex space-x-2">
-                <div class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_5px_#f43f5e]"></div>
-                <div class="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_5px_#f59e0b]"></div>
-                <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></div>
+        <div class="lg:w-1/2 relative mt-8 lg:mt-0">
+          <div class="relative z-10 animate-fade-in-up" style="animation-delay: 0.7s;">
+            <div class="bg-gradient-to-br from-gray-900/30 to-gray-800/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 backdrop-blur-lg border border-white/20 shadow-2xl code-block">
+              <div class="flex space-x-2 mb-3 sm:mb-4">
+                <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500 animate-pulse"></div>
+                <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500 animate-pulse" style="animation-delay: 0.2s;"></div>
+                <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
               </div>
-              <div class="text-xs text-slate-500 font-mono">bash - dev@andristore:~</div>
-              <div></div>
-            </div>
-            <div class="p-6 overflow-x-auto bg-[#0d1117]">
-              <pre class="text-sm font-mono leading-relaxed text-slate-300"><code><span class="text-purple-400">const</span> <span class="text-cyan-300">appInfo</span> = {
-  <span class="text-emerald-300">nama</span>: <span class="text-amber-300">"CodeSwap"</span>,
-  <span class="text-emerald-300">deskripsi</span>: <span class="text-amber-300">"Platform berbagi dan menyimpan 
-  potongan kode dengan tampilan modern."</span>,
-  <span class="text-emerald-300">versi</span>: <span class="text-amber-300">"1.0.0"</span>,
-  <span class="text-emerald-300">teknologi</span>: [<span class="text-amber-300">"HTML"</span>, <span class="text-amber-300">"Tailwind"</span>, <span class="text-amber-300">"Supabase"</span>]
+              <pre class="text-xs sm:text-sm overflow-x-auto"><code class="language-javascript text-gray-300">
+const appInfo = {
+  nama: "CodeSwap",
+  deskripsi: "Platform berbagi dan 
+  menyimpan potongan kode dengan 
+  tampilan modern, cepat, dan ringan.",
+  versi: "1.0.0",
+  teknologi: ["HTML", "TailwindCSS", 
+  "Vanilla JS", "Node.js 
+  (Express)", "Supabase"]
 };
 
-<span class="text-slate-500">// 👨‍💻 Informasi Developer</span>
-<span class="text-purple-400">const</span> <span class="text-cyan-300">developer</span> = {
-  <span class="text-emerald-300">nama</span>: <span class="text-amber-300">"aNdri Store"</span>,
-  <span class="text-emerald-300">role</span>: <span class="text-amber-300">"Web Developer"</span>,
-  <span class="text-emerald-300">website</span>: <span class="text-amber-300">"https://lynk.id/adshopdigital"</span>
+// 👨‍💻 Informasi Developer
+const developer = {
+  nama: "aNdri Store",
+  role: "Web Developer",
+  website: "https://lynk.id/adshopdigital",
+  kontak: "081934874758"
 };</code></pre>
             </div>
           </div>
+          <div class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 w-16 h-16 sm:w-24 sm:h-24 bg-white/10 rounded-full floating-element hidden sm:block"></div>
+          <div class="absolute -bottom-4 -left-4 w-20 h-20 sm:w-32 sm:h-32 bg-gray-400/10 rounded-full floating-element hidden sm:block"></div>
+          <div class="absolute top-1/2 right-1/4 w-12 h-12 sm:w-16 sm:h-16 bg-gray-300/10 rounded-full floating-element hidden sm:block" style="animation-delay: 3s;"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="py-6 px-4 relative z-10">
+  <!-- Search and Filter Section -->
+  <section class="py-6 sm:py-8 px-4 relative z-10">
     <div class="container mx-auto max-w-6xl">
-      <div class="glass-card rounded-xl p-2 border border-slate-700 focus-within:border-cyan-500/50 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all">
-        <div class="relative flex items-center">
-          <i class="fas fa-search absolute left-4 text-cyan-500"></i>
-          <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="Cari snippet berdasarkan judul atau bahasa (misal: JavaScript)..."
-            class="w-full bg-transparent border-none py-3 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-0 font-mono text-sm"
-          >
+      <div class="bg-gray-800/50 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-gray-700 animate-fade-in-up">
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex-1">
+            <div class="relative">
+              <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Cari snippet.."
+                class="w-full px-4 py-3 bg-gray-900/70 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all"
+              >
+              <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   </section>
 
-  <section id="leaderboard" class="py-10 px-4 relative z-10">
+  <!-- Leaderboard Section -->
+  <section id="leaderboard" class="py-8 sm:py-12 px-4 relative z-10">
     <div class="container mx-auto max-w-6xl">
-      <div class="flex items-center space-x-3 mb-8">
-        <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center border border-purple-500/50">
-          <i class="fas fa-crown text-purple-400"></i>
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up">
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0">Leaderboard Snippet</h2>
+        <div class="flex items-center space-x-2 text-white animate-pulse-slow">
+          <i class="fas fa-trophy text-yellow-400 text-sm sm:text-base"></i>
+          <span class="text-sm sm:text-base">Top Snippets</span>
         </div>
-        <h2 class="text-2xl font-bold font-mono tracking-tight text-white">Top <span class="text-purple-400">Snippets</span></h2>
       </div>
       
-      <div id="leaderboardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="col-span-full text-center py-12">
-          <div class="inline-block w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p class="text-cyan-400 font-mono text-sm">Menginisialisasi data...</p>
+      <div id="leaderboardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Loading state -->
+        <div class="col-span-full text-center py-8 sm:py-12">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-white mb-3 sm:mb-4"></div>
+          <p class="text-gray-400 text-sm sm:text-base">Memuat leaderboard...</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="snippets" class="py-10 px-4 relative z-10">
+  <!-- Latest Snippets Section -->
+  <section id="snippets" class="py-8 sm:py-12 md:py-16 px-4 relative z-10">
     <div class="container mx-auto max-w-6xl">
-      <div class="flex items-center space-x-3 mb-8">
-        <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center border border-cyan-500/50">
-          <i class="fas fa-stream text-cyan-400"></i>
-        </div>
-        <h2 class="text-2xl font-bold font-mono tracking-tight text-white">Data <span class="text-cyan-400">Stream</span></h2>
-      </div>
-      
-      <div id="snippetsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="col-span-full text-center py-12">
-          <div class="inline-block w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p class="text-cyan-400 font-mono text-sm">Memuat snippet database...</p>
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up">
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0">Snippet Terbaru</h2>
+        <div class="flex items-center space-x-2 text-white animate-pulse-slow">
+          <i class="fas fa-sync-alt animate-spin-slow text-sm sm:text-base"></i>
+          <span class="text-sm sm:text-base">Live Updates</span>
         </div>
       </div>
       
-      <div class="text-center mt-12" id="loadMoreContainer" style="display: none;">
-        <button id="loadMoreBtn" class="px-6 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-500 text-white rounded-lg font-mono text-sm transition-all hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] flex items-center mx-auto group">
+      <div id="snippetsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Loading state -->
+        <div class="col-span-full text-center py-8 sm:py-12">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-white mb-3 sm:mb-4"></div>
+          <p class="text-gray-400 text-sm sm:text-base">Memuat snippet...</p>
+        </div>
+      </div>
+      
+      <div class="text-center mt-8 sm:mt-12" id="loadMoreContainer" style="display: none;">
+        <button id="loadMoreBtn" class="inline-flex items-center px-4 sm:px-5 py-2 sm:py-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-all border border-gray-700 hover:animate-wiggle btn-mobile text-sm sm:text-base">
           <span>Muat Lebih Banyak</span>
-          <i class="fas fa-chevron-down ml-3 text-cyan-500 group-hover:translate-y-1 transition-transform"></i>
+          <i class="fas fa-arrow-down ml-2 animate-bounce text-xs sm:text-sm"></i>
         </button>
       </div>
     </div>
   </section>
 
-  <footer class="bg-[#020617] border-t border-slate-800/80 py-12 px-4 relative z-10 mt-10">
+  <!-- Footer -->
+  <footer class="bg-black border-t border-gray-800 py-8 sm:py-12 px-4 relative z-10">
     <div class="container mx-auto max-w-6xl">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
         <div class="sm:col-span-2">
-          <div class="flex items-center space-x-3 mb-4">
-            <div class="w-8 h-8 rounded-lg bg-slate-900 border border-cyan-500/30 flex items-center justify-center">
-              <i class="fas fa-terminal text-cyan-400 text-sm"></i>
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="logo-container">
+              <div class="logo-glow"></div>
+              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-r from-white to-gray-300 flex items-center justify-center animate-pulse-slow">
+                <i class="fas fa-code text-black text-xs sm:text-sm"></i>
+              </div>
             </div>
-            <h2 class="text-xl font-bold text-white tracking-wide">CodeSwap</h2>
+            <h2 class="text-lg sm:text-xl font-bold text-white">CodeSwap</h2>
           </div>
-          <p class="text-slate-400 text-sm max-w-md mb-6 leading-relaxed">
-            Platform eksekusi dan berbagi kode untuk developer Indonesia. Dibangun untuk kecepatan, kolaborasi, dan desain masa depan.
+          <p class="text-gray-400 text-sm sm:text-base max-w-md mb-4 sm:mb-6">
+            Platform berbagi kode untuk developer Indonesia. Temukan, upload, dan berkolaborasi dengan snippet kode terbaik.
           </p>
-          <div class="flex space-x-4">
-            <a href="#" class="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center hover:border-cyan-500 hover:text-cyan-400 text-slate-400 transition-all shadow-lg hover:shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-              <i class="fab fa-twitter"></i>
+          <div class="flex space-x-3 sm:space-x-4">
+            <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-white hover:text-black transition-colors hover:animate-wiggle btn-mobile">
+              <i class="fab fa-twitter text-xs sm:text-sm"></i>
             </a>
-            <a href="#" class="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center hover:border-purple-500 hover:text-purple-400 text-slate-400 transition-all shadow-lg hover:shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-              <i class="fab fa-github"></i>
+            <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-white hover:text-black transition-colors hover:animate-wiggle btn-mobile">
+              <i class="fab fa-github text-xs sm:text-sm"></i>
+            </a>
+            <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-white hover:text-black transition-colors hover:animate-wiggle btn-mobile">
+              <i class="fab fa-discord text-xs sm:text-sm"></i>
             </a>
           </div>
         </div>
         
         <div>
-          <h3 class="text-white font-mono text-sm font-semibold mb-4 uppercase tracking-wider">Navigasi</h3>
-          <ul class="space-y-3">
-            <li><a href="/" class="text-slate-400 hover:text-cyan-400 transition-colors text-sm flex items-center"><i class="fas fa-angle-right mr-2 text-xs text-slate-600"></i> Beranda</a></li>
-            <li><a href="#snippets" class="text-slate-400 hover:text-cyan-400 transition-colors text-sm flex items-center"><i class="fas fa-angle-right mr-2 text-xs text-slate-600"></i> Jelajahi</a></li>
-            <li><a href="#leaderboard" class="text-slate-400 hover:text-cyan-400 transition-colors text-sm flex items-center"><i class="fas fa-angle-right mr-2 text-xs text-slate-600"></i> Leaderboard</a></li>
+          <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Tautan Cepat</h3>
+          <ul class="space-y-2">
+            <li><a href="/" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Beranda</a></li>
+            <li><a href="#snippets" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Jelajahi</a></li>
+            <li><a href="#leaderboard" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Leaderboard</a></li>
+            <li><a href="/upload" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Upload</a></li>
           </ul>
         </div>
         
         <div>
-          <h3 class="text-white font-mono text-sm font-semibold mb-4 uppercase tracking-wider">Sistem</h3>
-          <ul class="space-y-3">
-            <li><a href="#" class="text-slate-400 hover:text-cyan-400 transition-colors text-sm flex items-center"><i class="fas fa-angle-right mr-2 text-xs text-slate-600"></i> Status API</a></li>
-            <li><a href="#" class="text-slate-400 hover:text-cyan-400 transition-colors text-sm flex items-center"><i class="fas fa-angle-right mr-2 text-xs text-slate-600"></i> Dokumentasi</a></li>
-            <li><a href="#" class="text-slate-400 hover:text-cyan-400 transition-colors text-sm flex items-center"><i class="fas fa-angle-right mr-2 text-xs text-slate-600"></i> Syarat Layanan</a></li>
+          <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Dukungan</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Bantuan</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Kontak</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Kebijakan Privasi</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Syarat & Ketentuan</a></li>
           </ul>
         </div>
       </div>
       
-      <div class="border-t border-slate-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-xs font-mono">
-        <p>&copy; 2025-2026 CodeSwap by aNdri Store. System v1.0.0.</p>
-        <p class="mt-2 md:mt-0 flex items-center">
-          Crafted with <i class="fas fa-bolt text-yellow-400 mx-2"></i> for Developers
-        </p>
+      <div class="border-t border-gray-800 mt-6 sm:mt-10 pt-4 sm:pt-6 text-center text-gray-500 text-xs sm:text-sm">
+        <p>&copy; 2025-2026 CodeSwap by aNdri Store. All rights reserved. Dibuat dengan <i class="fas fa-heart text-red-500 mx-1 animate-pulse"></i> untuk developer Indonesia.</p>
       </div>
     </div>
   </footer>
 
 <script>
-  // === JANGAN UBAH FUNGSI DI BAWAH INI SAMA SEKALI ===
-  
   // === Supabase setup ===
   const SUPABASE_URL = "https://cdrohsbhpvclmpmgqehl.supabase.co";
   const SUPABASE_KEY = "sb_publishable_6OONWauoAvtxkuO2loGmbQ_ep5p7sG9";
@@ -382,11 +484,11 @@
   // === Typing animation variables ===
   const typingTextElement = document.getElementById('typing-text');
   const texts = [
-    "Snippet Kode.",
-    "Data JavaScript.",
-    "Script Python.",
-    "Komponen UI.",
-    "Logika Algoritma."
+    "Snippet Kode",
+    "Kode JavaScript",
+    "Kode Python",
+    "Kode HTML/CSS",
+    "Algoritma"
   ];
   let textIndex = 0;
   let charIndex = 0;
@@ -403,11 +505,16 @@
       const particle = document.createElement('div');
       particle.classList.add('particle');
 
-      const size = Math.random() * 6 + 2;
+      // Random size
+      const size = Math.random() * 8 + 4;
       particle.style.width = `${size}px`;
       particle.style.height = `${size}px`;
+
+      // Random position
       particle.style.left = `${Math.random() * 100}%`;
       particle.style.top = `${Math.random() * 100}%`;
+
+      // Random animation delay
       particle.style.animationDelay = `${Math.random() * 10}s`;
 
       container.appendChild(particle);
@@ -437,6 +544,7 @@
       textIndex = (textIndex + 1) % texts.length;
       typingSpeed = 500;
     }
+
     setTimeout(typeText, typingSpeed);
   }
 
@@ -450,14 +558,14 @@
 
       if (session?.user) {
         nav.innerHTML = `
-          <span class="text-cyan-400 font-mono text-xs hidden sm:inline mr-2 border border-cyan-500/30 bg-cyan-950/30 px-2 py-1 rounded">User: ${session.user.email.split('@')[0]}</span>
-          <button id="logoutBtn" class="text-slate-400 hover:text-rose-400 transition-colors flex items-center px-2 text-sm">
-            <i class="fas fa-power-off mr-1"></i>
+          <span class="text-gray-300 text-sm hidden sm:inline">Halo, ${session.user.email.split('@')[0]}</span>
+          <button id="logoutBtn" class="text-gray-300 hover:text-red-400 transition-colors flex items-center hover:animate-wiggle btn-mobile px-2 text-sm">
+            <i class="fas fa-sign-out-alt mr-1"></i>
             <span class="hidden sm:inline">Logout</span>
           </button>
-          <a href="/upload" class="px-4 py-2 bg-slate-800 border border-slate-700 hover:border-cyan-500 text-white rounded-lg text-sm font-medium transition-all shadow-[0_0_10px_rgba(0,0,0,0)] hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] ml-2">
-            <i class="fas fa-cloud-upload-alt mr-1"></i>
-            <span class="hidden sm:inline">Deploy</span>
+          <a href="/upload" class="px-3 py-2 bg-gradient-to-r from-white to-gray-300 text-black rounded-lg font-medium hover:from-gray-200 hover:to-gray-400 transition-all flex items-center animate-pulse-slow btn-mobile text-sm">
+            <i class="fas fa-cloud-upload-alt mr-1 sm:mr-2"></i>
+            <span class="hidden sm:inline">Upload</span>
           </a>
         `;
 
@@ -467,9 +575,9 @@
         });
       } else {
         nav.innerHTML = `
-          <a href="/upload" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-            <i class="fas fa-terminal mr-1"></i>
-            <span class="hidden sm:inline">Akses Sistem</span>
+          <a href="/upload" class="px-3 py-2 bg-gradient-to-r from-white to-gray-300 text-black rounded-lg font-medium hover:from-gray-200 hover:to-gray-400 transition-all flex items-center animate-pulse-slow btn-mobile text-sm">
+            <i class="fas fa-cloud-upload-alt mr-1 sm:mr-2"></i>
+            <span class="hidden sm:inline">Upload</span>
           </a>
         `;
       }
@@ -486,6 +594,7 @@
         .select('*', { count: 'exact', head: true });
 
       if (error) throw error;
+
       totalLikes = count || 0;
       document.getElementById('totalLikes').textContent = totalLikes.toLocaleString();
     } catch (error) {
@@ -497,18 +606,21 @@
   // === Ambil top 1 bahasa pemrograman ===
   async function fetchTopLanguage() {
     try {
+      // Ambil semua snippet untuk analisis bahasa
       const { data: snippets, error } = await supabase
         .from('snippets')
         .select('language');
 
       if (error) throw error;
 
+      // Hitung frekuensi setiap bahasa
       const languageCount = {};
       snippets.forEach(snippet => {
         const lang = snippet.language || 'Unknown';
         languageCount[lang] = (languageCount[lang] || 0) + 1;
       });
 
+      // Cari bahasa dengan count tertinggi
       let topLang = '-';
       let maxCount = 0;
 
@@ -520,20 +632,18 @@
       });
 
       topLanguage = topLang;
-      // Fitur ini sekarang sudah ada elemen HTML-nya di baris ke-224 berkat modifikasi di atas
       document.getElementById('topLanguage').textContent = topLanguage;
 
     } catch (error) {
       console.error('Error fetching top language:', error);
-      if(document.getElementById('topLanguage')) {
-        document.getElementById('topLanguage').textContent = '-';
-      }
+      document.getElementById('topLanguage').textContent = '-';
     }
   }
 
   // === Ambil semua snippet dari Supabase ===
   async function fetchAllSnippets() {
     try {
+      // Ambil semua data snippet
       const { data: snippets, error, count } = await supabase
         .from('snippets')
         .select('*', { count: 'exact' })
@@ -544,6 +654,7 @@
       totalSnippets = count || 0;
       document.getElementById('totalSnippets').textContent = totalSnippets.toLocaleString();
 
+      // Ambil jumlah likes untuk setiap snippet
       const snippetsWithLikes = await Promise.all(snippets.map(async (s) => {
         try {
           const { count, error: countError } = await supabase
@@ -552,10 +663,12 @@
             .eq('snippet_id', s.id);
 
           if (countError) {
+            console.error('Count error for snippet', s.id, countError);
             return { ...s, likes_count: 0 };
           }
           return { ...s, likes_count: count || 0 };
         } catch (e) {
+          console.error('Unexpected count error for', s.id, e);
           return { ...s, likes_count: 0 };
         }
       }));
@@ -563,7 +676,10 @@
       allSnippets = snippetsWithLikes;
       filteredSnippets = [...allSnippets];
       
+      // Tampilkan leaderboard
       displayLeaderboard();
+      
+      // Tampilkan snippet terbaru
       displaySnippets(0);
       
     } catch (error) {
@@ -571,30 +687,31 @@
       const grid = document.getElementById('snippetsGrid');
       if (grid) {
         grid.innerHTML = `
-          <div class="col-span-full text-center py-12">
-            <i class="fas fa-exclamation-triangle text-4xl text-rose-500 mb-4 animate-pulse"></i>
-            <p class="text-rose-400 font-mono">System Error: Gagal memuat data</p>
-            <p class="text-slate-500 text-sm mt-2">Koneksi database terputus. Silakan coba lagi.</p>
+          <div class="col-span-full text-center py-8 sm:py-12">
+            <i class="fas fa-exclamation-triangle text-4xl sm:text-5xl text-red-500 mb-3 sm:mb-4 animate-pulse"></i>
+            <p class="text-red-400 text-base sm:text-lg mb-2">Gagal memuat snippet</p>
+            <p class="text-gray-500 text-sm sm:text-base">Silakan coba lagi nanti</p>
           </div>
         `;
       }
     }
   }
 
-  // === Tampilkan leaderboard (Desain dimodifikasi menyesuaikan template Tech) ===
+  // === Tampilkan leaderboard ===
   function displayLeaderboard() {
     const leaderboardGrid = document.getElementById('leaderboardGrid');
     if (!leaderboardGrid) return;
 
+    // Sort berdasarkan likes_count (descending)
     const topSnippets = [...allSnippets]
       .sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0))
       .slice(0, 3);
 
     if (topSnippets.length === 0) {
       leaderboardGrid.innerHTML = `
-        <div class="col-span-full text-center py-12 glass-card rounded-xl">
-          <i class="fas fa-database text-4xl text-slate-600 mb-4"></i>
-          <p class="text-slate-500 font-mono">Data leaderboard belum tersedia.</p>
+        <div class="col-span-full text-center py-8 sm:py-12">
+          <i class="fas fa-trophy text-4xl sm:text-5xl text-gray-600 mb-3 sm:mb-4"></i>
+          <p class="text-gray-500 text-base sm:text-lg mb-4">Belum ada snippet untuk leaderboard</p>
         </div>
       `;
       return;
@@ -603,44 +720,42 @@
     leaderboardGrid.innerHTML = '';
 
     topSnippets.forEach((snippet, index) => {
-      // Modifikasi warna rank sesuai tema Tech
-      const rankClass = index === 0 ? 'border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.2)] bg-yellow-950/20' : 
-                         index === 1 ? 'border-slate-400/50 shadow-[0_0_15px_rgba(148,163,184,0.2)] bg-slate-800/50' : 
-                         'border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.2)] bg-orange-950/20';
+      const rankClass = index === 0 ? 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500' : 
+                         index === 1 ? 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-gray-400' : 
+                         'bg-gradient-to-r from-amber-700/20 to-amber-800/20 border-amber-700';
       
-      const rankIcon = index === 0 ? '<i class="fas fa-trophy text-yellow-400"></i>' : 
-                       index === 1 ? '<i class="fas fa-medal text-slate-300"></i>' : 
-                       '<i class="fas fa-award text-orange-500"></i>';
+      const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
       
       const div = document.createElement('div');
-      div.className = `snippet-card p-5 rounded-xl transition-all cursor-pointer border-t-2 ${rankClass}`;
+      div.className = `snippet-card p-4 sm:p-5 rounded-xl transition-all cursor-pointer animate-fade-in-up border-2 ${rankClass}`;
+      div.style.animationDelay = `${index * 0.1}s`;
 
       div.innerHTML = `
-        <div class="flex justify-between items-start mb-3">
-          <h3 class="font-bold text-lg text-white break-words flex-1 pr-2 flex items-center gap-2">
-            ${rankIcon} ${escapeHtml(snippet.title || 'Untitled_File')}
+        <div class="flex justify-between items-start mb-2 sm:mb-3">
+          <h3 class="font-bold text-base sm:text-lg text-white break-words flex-1 pr-2">
+            ${rankIcon} ${escapeHtml(snippet.title || 'Untitled')}
           </h3>
-          <span class="language-badge ${getLanguageColor(snippet.language)} border border-current bg-transparent">
+          <span class="language-badge ${getLanguageColor(snippet.language)} animate-pulse text-xs sm:text-sm whitespace-nowrap">
             ${snippet.language || 'Unknown'}
           </span>
         </div>
 
-        <p class="text-slate-400 text-sm mb-5 line-clamp-2 leading-relaxed">
-          ${escapeHtml(snippet.description || '// Tidak ada deksripsi terlampir')}
+        <p class="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
+          ${escapeHtml(snippet.description || 'Tidak ada deskripsi')}
         </p>
 
-        <div class="flex justify-between items-center text-xs text-slate-500 font-mono">
-          <span>> init: ${formatDate(snippet.created_at)}</span>
+        <div class="flex justify-between items-center text-xs text-gray-300">
+          <span>Dibuat ${formatDate(snippet.created_at)}</span>
 
-          <div class="flex items-center gap-3">
-            <span class="flex items-center text-purple-400 bg-purple-950/50 px-2 py-1 rounded border border-purple-500/30">
-              <i class="fas fa-heart mr-1.5 text-xs"></i>
-              <span class="font-bold">${snippet.likes_count || 0}</span>
+          <div class="flex items-center gap-2">
+            <span class="flex items-center text-white font-bold">
+              <i class="fas fa-heart mr-1 text-pink-500"></i>
+              <span>${snippet.likes_count || 0}</span>
             </span>
 
             <a href="/snippet?id=${snippet.id}" 
-               class="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center">
-              [Detail]
+               class="text-white hover:text-gray-300 transition-colors flex items-center hover:animate-pulse text-xs sm:text-sm">
+              Lihat detail <i class="fas fa-arrow-right ml-1 text-xs"></i>
             </a>
           </div>
         </div>
@@ -650,73 +765,73 @@
     });
   }
 
-  // === Tampilkan snippet (Desain dimodifikasi menyesuaikan template Tech) ===
+  // === Tampilkan snippet ===
   function displaySnippets(page) {
     const grid = document.getElementById('snippetsGrid');
     if (!grid) return;
 
+    // Clear grid hanya untuk halaman pertama
     if (page === 0) {
       grid.innerHTML = '';
     }
 
+    // Ambil snippet untuk halaman ini
     const startIndex = page * snippetsPerPage;
     const endIndex = startIndex + snippetsPerPage;
     const snippetsToShow = filteredSnippets.slice(startIndex, endIndex);
 
     if (snippetsToShow.length === 0 && page === 0) {
       grid.innerHTML = `
-        <div class="col-span-full text-center py-12 glass-card rounded-xl">
-          <i class="fas fa-terminal text-4xl text-slate-600 mb-4"></i>
-          <p class="text-slate-400 mb-4 font-mono">Query tidak menemukan hasil.</p>
-          <button id="resetFilters" class="px-4 py-2 bg-slate-800 text-cyan-400 border border-cyan-500/50 rounded hover:bg-cyan-950/50 transition-colors font-mono text-sm">
-            > reset_query()
+        <div class="col-span-full text-center py-8 sm:py-12">
+          <i class="fas fa-code text-4xl sm:text-5xl text-gray-600 mb-3 sm:mb-4"></i>
+          <p class="text-gray-500 text-base sm:text-lg mb-4">Tidak ada snippet yang cocok dengan filter</p>
+          <button id="resetFilters" class="inline-block px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-lg transition-colors animate-pulse text-sm sm:text-base btn-mobile">
+            Reset Filter
           </button>
         </div>
       `;
       
       document.getElementById('resetFilters').addEventListener('click', () => {
-        document.getElementById('searchInput').value = '';        
-        filteredSnippets = [...allSnippets];
+        document.getElementById('searchInput').value = '';        filteredSnippets = [...allSnippets];
         displaySnippets(0);
       });
       
       return;
     }
 
-    snippetsToShow.forEach((snippet) => {
+    snippetsToShow.forEach((snippet, index) => {
       const likesCount = snippet.likes_count || 0;
 
       const div = document.createElement('div');
-      div.className = 'snippet-card p-5 rounded-xl transition-all cursor-pointer flex flex-col justify-between h-full';
+      div.className = 'snippet-card p-4 sm:p-5 rounded-xl transition-all cursor-pointer animate-fade-in-up';
+      div.style.animationDelay = `${index * 0.1}s`;
 
       div.innerHTML = `
-        <div>
-          <div class="flex justify-between items-start mb-3 gap-2">
-            <h3 class="font-bold text-base text-white break-words flex-1 leading-snug">
-              ${escapeHtml(snippet.title || 'Untitled_Script')}
-            </h3>
-            <span class="language-badge ${getLanguageColor(snippet.language)} border border-current bg-transparent whitespace-nowrap">
-              ${snippet.language || 'Unknown'}
-            </span>
-          </div>
-
-          <p class="text-slate-400 text-sm mb-5 line-clamp-3 leading-relaxed">
-            ${escapeHtml(snippet.description || '// No documentation provided')}
-          </p>
+        <div class="flex justify-between items-start mb-2 sm:mb-3">
+          <h3 class="font-bold text-base sm:text-lg text-white break-words flex-1 pr-2">
+            ${escapeHtml(snippet.title || 'Untitled')}
+          </h3>
+          <span class="language-badge ${getLanguageColor(snippet.language)} animate-pulse text-xs sm:text-sm whitespace-nowrap">
+            ${snippet.language || 'Unknown'}
+          </span>
         </div>
 
-        <div class="flex justify-between items-center text-xs text-slate-500 font-mono mt-auto pt-3 border-t border-slate-800">
-          <span>${formatDate(snippet.created_at)}</span>
+        <p class="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
+          ${escapeHtml(snippet.description || 'Tidak ada deskripsi')}
+        </p>
 
-          <div class="flex items-center gap-3">
-            <span class="flex items-center text-slate-400">
-              <i class="fas fa-heart mr-1.5 text-rose-500/80"></i>
+        <div class="flex justify-between items-center text-xs text-gray-500">
+          <span>Dibuat ${formatDate(snippet.created_at)}</span>
+
+          <div class="flex items-center gap-2">
+            <span class="flex items-center text-gray-400">
+              <i class="fas fa-heart mr-1 text-pink-500"></i>
               <span>${likesCount}</span>
             </span>
 
             <a href="/snippet?id=${snippet.id}" 
-               class="text-cyan-500 hover:text-cyan-400 transition-colors flex items-center group">
-              View <i class="fas fa-arrow-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+               class="text-white hover:text-gray-300 transition-colors flex items-center hover:animate-pulse text-xs sm:text-sm">
+              Lihat detail <i class="fas fa-arrow-right ml-1 text-xs"></i>
             </a>
           </div>
         </div>
@@ -725,6 +840,7 @@
       grid.appendChild(div);
     });
 
+    // Tampilkan tombol "Load More" jika ada lebih banyak data
     const loadMoreContainer = document.getElementById('loadMoreContainer');
     if (loadMoreContainer) {
       if (endIndex < filteredSnippets.length) {
@@ -741,44 +857,45 @@
   function filterAndSortSnippets() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
+    // Filter berdasarkan search term
     filteredSnippets = allSnippets.filter(snippet => {
       const matchesSearch = !searchTerm || 
         snippet.title?.toLowerCase().includes(searchTerm) ||
-        snippet.description?.toLowerCase().includes(searchTerm) ||
-        snippet.language?.toLowerCase().includes(searchTerm); // Tambahan filter bahasa
+        snippet.description?.toLowerCase().includes(searchTerm);      
       
       return matchesSearch;
     });
 
+    // Tampilkan hasil
     displaySnippets(0);
   }
 
-  // Helper function: Warna Tech-based untuk label bahasa
+  // Helper function untuk warna bahasa pemrograman
   function getLanguageColor(language) {
     const colors = {
-      'JavaScript': 'text-yellow-400 border-yellow-400/30',
-      'Python': 'text-blue-400 border-blue-400/30',
-      'CSS': 'text-indigo-400 border-indigo-400/30',
-      'HTML': 'text-orange-500 border-orange-500/30',
-      'Java': 'text-red-400 border-red-400/30',
-      'PHP': 'text-purple-400 border-purple-400/30',
-      'TypeScript': 'text-cyan-400 border-cyan-400/30',
-      'C++': 'text-pink-400 border-pink-400/30',
-      'C#': 'text-emerald-400 border-emerald-400/30',
-      'Ruby': 'text-rose-400 border-rose-400/30',
-      'Go': 'text-cyan-300 border-cyan-300/30',
-      'Rust': 'text-orange-400 border-orange-400/30',
-      'Swift': 'text-orange-500 border-orange-500/30'
+      'JavaScript': 'bg-yellow-500/20 text-yellow-300',
+      'Python': 'bg-blue-500/20 text-blue-300',
+      'CSS': 'bg-indigo-500/20 text-indigo-300',
+      'HTML': 'bg-red-500/20 text-red-300',
+      'Java': 'bg-orange-500/20 text-orange-300',
+      'PHP': 'bg-purple-500/20 text-purple-300',
+      'TypeScript': 'bg-blue-600/20 text-blue-300',
+      'C++': 'bg-pink-500/20 text-pink-300',
+      'C#': 'bg-green-500/20 text-green-300',
+      'Ruby': 'bg-red-600/20 text-red-300',
+      'Go': 'bg-cyan-500/20 text-cyan-300',
+      'Rust': 'bg-orange-600/20 text-orange-300',
+      'Swift': 'bg-orange-500/20 text-orange-300'
     };
-    return colors[language] || 'text-slate-400 border-slate-400/30';
+    return colors[language] || 'bg-gray-500/20 text-gray-300';
   }
 
   // Helper function untuk format tanggal
   function formatDate(dateString) {
-    if (!dateString) return 'unknown_date';
+    if (!dateString) return 'tanggal tidak diketahui';
 
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'invalid_date';
+    if (isNaN(date.getTime())) return 'tanggal tidak valid';
 
     const now = new Date();
     const diffTime = Math.abs(now - date);
@@ -786,9 +903,9 @@
 
     if (diffDays === 1) return 'hari ini';
     if (diffDays === 2) return 'kemarin';
-    if (diffDays < 7) return `${diffDays - 1}h lalu`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w lalu`;
-    return `${Math.floor(diffDays / 30)}mo lalu`;
+    if (diffDays < 7) return `${diffDays - 1} hari yang lalu`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} minggu yang lalu`;
+    return `${Math.floor(diffDays / 30)} bulan yang lalu`;
   }
 
   // Helper function untuk escape HTML
@@ -802,16 +919,16 @@
       .replace(/'/g, "&#039;");
   }
 
-  // Event listener
+  // Event listener untuk tombol "Load More"
   document.getElementById('loadMoreBtn')?.addEventListener('click', () => {
     displaySnippets(currentPage + 1);
   });
 
+  // Event listeners untuk filter dan search
   document.getElementById('searchInput')?.addEventListener('input', filterAndSortSnippets);
-  
   // Initialize
   createParticles();
-  setTimeout(typeText, 1000); 
+  setTimeout(typeText, 1000); // Start typing animation after 1 second
   checkAuth();
   fetchTotalLikes();
   fetchTopLanguage();
